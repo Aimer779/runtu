@@ -4,32 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>润图 SoftShot</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Noto+Sans+SC:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #EDE4D7;
-      --bg-deep: #D9CBB8;
-      --surface: #FAF6F1;
-      --surface-2: #FFFCF8;
+      --bg: #F5F3EE;
+      --bg-deep: #E8E5DE;
+      --surface: #FDFBF7;
+      --surface-2: #FFFFFF;
       --ink: #2C261E;
       --ink-soft: #5C534A;
-      --ink-faint: #8B8076;
-      --line: #E4D9CC;
-      --line-strong: #D4C6B6;
+      --ink-faint: #746B60;
+      --line: #E6E1D8;
+      --line-strong: #C8BEB1;
       --accent: #9A4E32;
       --accent-hover: #7F4029;
       --accent-soft: #F6EDE9;
       --accent-ring: #C46B4A;
-      --shadow-ui: 0 1px 2px rgba(44, 38, 30, 0.04), 0 8px 24px rgba(44, 38, 30, 0.06);
       --radius-xs: 4px;
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
-      --font-ui: "Source Sans 3", "Noto Sans SC", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      --font-display: "Fraunces", "Noto Serif SC", "Times New Roman", serif;
+      --font-ui: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --font-display: "Georgia", "Songti SC", "SimSun", serif;
       --ease: cubic-bezier(0.2, 0, 0, 1);
+      --space-section: 22px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,51 +34,55 @@
     body {
       font-family: var(--font-ui);
       color: var(--ink);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(196, 107, 74, 0.07), transparent 50%),
-        radial-gradient(900px 500px at 110% 10%, rgba(107, 127, 106, 0.08), transparent 46%),
-        var(--bg);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
     button, input, select { font-family: inherit; color: inherit; }
-    button { cursor: pointer; }
+    button { cursor: pointer; touch-action: manipulation; transition: transform 120ms var(--ease); }
+    button:active:not(:disabled):not(:focus-visible) { transform: scale(0.96); }
     button:focus-visible,
-    input:focus-visible {
+    input:focus-visible,
+    summary:focus-visible,
+    a:focus-visible {
       outline: 2px solid var(--accent-ring);
       outline-offset: 2px;
     }
 
     .topbar {
-      height: 56px;
+      min-height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px 0 22px;
+      padding: 14px 28px;
       flex-shrink: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
     }
 
     .brand {
       display: flex;
-      align-items: baseline;
-      gap: 10px;
+      align-items: center;
+      gap: 12px;
       min-width: 0;
     }
     .mark {
-      width: 18px;
-      height: 18px;
-      border-radius: 5px;
-      background: linear-gradient(145deg, #E8B4A0, #9A4E32);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
-      transform: translateY(1px);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--surface);
     }
     .brand h1 {
       font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 560;
-      letter-spacing: 0.01em;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0;
       line-height: 1;
     }
     .brand small {
@@ -93,7 +94,7 @@
     .top-actions { display: flex; gap: 8px; align-items: center; }
 
     .btn {
-      height: 34px;
+      min-height: 40px;
       padding: 0 14px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--line-strong);
@@ -101,68 +102,62 @@
       color: var(--ink);
       font-size: 13px;
       font-weight: 500;
-      letter-spacing: 0.01em;
-      transition: background 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease);
+      letter-spacing: 0;
     }
-    .btn:hover { background: #fff; border-color: #C9B9A6; }
-    .btn:active { transform: translateY(1px); }
+    @media (hover: hover) { .btn:hover { background: #fff; border-color: #C9B9A6; } }
     .btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
     .btn-primary {
       background: var(--accent);
       border-color: transparent;
       color: #FAF6F1;
     }
-    .btn-primary:hover { background: var(--accent-hover); border-color: transparent; }
+    @media (hover: hover) { .btn-primary:hover { background: var(--accent-hover); border-color: transparent; } }
     .btn-ghost {
       background: transparent;
       border-color: transparent;
       color: var(--ink-soft);
     }
-    .btn-ghost:hover { background: rgba(44, 38, 30, 0.05); }
+    @media (hover: hover) { .btn-ghost:hover { background: rgba(44, 38, 30, 0.05); } }
 
     .shell {
       flex: 1;
       display: grid;
-      grid-template-columns: 292px 1fr;
-      gap: 16px;
-      padding: 0 16px 16px;
+      grid-template-columns: 332px minmax(0, 1fr);
+      gap: 0;
+      padding: 0;
       min-height: 0;
     }
 
     .panel {
       background: var(--surface);
-      border: 1px solid rgba(212, 198, 182, 0.7);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-ui);
+      border-right: 1px solid var(--line);
       overflow: auto;
-      padding: 18px 16px 20px;
+      padding: 24px 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line-strong) transparent;
     }
 
-    .section { margin-bottom: 22px; }
-    .section:last-child { margin-bottom: 0; }
+    .section { padding-bottom: var(--space-section); margin-bottom: var(--space-section); border-bottom: 1px solid var(--line); }
+    .section:last-child { padding-bottom: 0; margin-bottom: 0; border: 0; }
     .section-label {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-bottom: 10px;
+      color: var(--ink);
+      margin-bottom: 12px;
     }
 
     .swatches {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 8px;
     }
     .swatch {
       aspect-ratio: 1;
       border: 0;
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       box-shadow: inset 0 0 0 1px rgba(44, 38, 30, 0.08);
       position: relative;
-      transition: transform 160ms var(--ease);
     }
-    .swatch:hover { transform: translateY(-1px); }
     .swatch[aria-pressed="true"] {
       box-shadow:
         inset 0 0 0 1px rgba(44, 38, 30, 0.08),
@@ -194,37 +189,41 @@
     .bg-extra { margin-top: 8px; }
     .image-backgrounds {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin-top: 10px;
     }
     .image-background {
       overflow: hidden;
       padding: 3px;
-      border: 1px solid var(--line-strong);
-      border-radius: 9px;
-      background: var(--surface-2);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      background: transparent;
       text-align: left;
     }
     .image-background img {
       display: block;
       width: 100%;
+      height: auto;
       aspect-ratio: 16 / 9;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: var(--radius-xs);
+      outline: 1px solid rgba(44,38,30,0.12);
+      outline-offset: -1px;
     }
-    .image-background span { display: block; padding: 5px 3px 3px; font-size: 11px; }
-    .image-background:hover { border-color: var(--accent); }
+    .image-background span { display: block; padding: 6px 0 3px; font-size: 11px; text-align: center; }
+    @media (hover: hover) { .image-background:hover { border-color: var(--accent); } }
     .image-background[aria-pressed="true"] {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 1px var(--accent);
       color: var(--accent);
     }
     .image-background:disabled { opacity: 0.5; cursor: wait; }
     .bg-extra[hidden] { display: none !important; }
     #bgFileRow[hidden] { display: none; }
     .linkish {
-      height: 28px;
+      min-height: 40px;
       padding: 0 8px;
       border: 0;
       background: transparent;
@@ -232,7 +231,7 @@
       font-size: 12px;
       font-weight: 500;
     }
-    .linkish:hover { text-decoration: underline; }
+    @media (hover: hover) { .linkish:hover { text-decoration: underline; } }
 
     .row {
       display: flex;
@@ -254,82 +253,85 @@
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 4px;
-      border-radius: 99px;
-      background: #E6DCCF;
-      outline: none;
-      margin: 8px 0 2px;
+      height: 40px;
+      background: transparent;
+      margin: 0;
+      cursor: pointer;
+      accent-color: var(--accent);
     }
+    input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: var(--line-strong); }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 18px;
+      height: 18px;
+      margin-top: -7px;
       border-radius: 50%;
       background: var(--surface-2);
       border: 1px solid var(--line-strong);
       box-shadow: 0 1px 3px rgba(44, 38, 30, 0.16);
       cursor: pointer;
     }
+    input[type="range"]::-moz-range-track { height: 4px; background: var(--line-strong); }
+    input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border: 1px solid var(--line-strong); background: var(--surface-2); border-radius: 50%; }
 
     .pills { display: flex; flex-wrap: wrap; gap: 6px; }
     .pill {
-      height: 28px;
-      padding: 0 10px;
-      border-radius: 999px;
+      min-height: 40px;
+      min-width: 40px;
+      padding: 0 9px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--line);
       background: var(--surface-2);
       font-size: 12px;
       color: var(--ink-soft);
-      transition: background 160ms var(--ease), color 160ms var(--ease), border-color 160ms var(--ease);
     }
     .pill[aria-pressed="true"] {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: #FAF6F1;
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-hover);
     }
 
     .toggle-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 0 2px;
+      min-height: 44px;
     }
     .toggle-row span { font-size: 13px; color: var(--ink-soft); }
     .switch {
-      width: 36px;
-      height: 20px;
-      border-radius: 99px;
+      width: 44px;
+      height: 40px;
+      border-radius: var(--radius-sm);
       border: 0;
-      background: #D9CBBA;
+      background: transparent;
       position: relative;
-      transition: background 160ms var(--ease);
     }
+    .switch::before { content: ""; position: absolute; inset: 9px 3px; background: var(--line-strong); border-radius: 99px; }
     .switch::after {
       content: "";
       position: absolute;
-      top: 2px;
-      left: 2px;
+      top: 12px;
+      left: 6px;
       width: 16px;
       height: 16px;
       border-radius: 50%;
       background: #FFFCF8;
       box-shadow: 0 1px 2px rgba(44, 38, 30, 0.2);
-      transition: transform 160ms var(--ease);
     }
-    .switch[aria-pressed="true"] { background: var(--accent); }
+    .switch[aria-pressed="true"]::before { background: var(--accent); }
     .switch[aria-pressed="true"]::after { transform: translateX(16px); }
 
     .color-row {
       display: grid;
-      grid-template-columns: 28px 1fr;
+      grid-template-columns: 40px 1fr;
       gap: 8px;
       align-items: center;
       margin-top: 10px;
     }
     .color-row[hidden] { display: none !important; }
     input[type="color"] {
-      width: 28px;
-      height: 28px;
+      width: 40px;
+      height: 40px;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 0;
@@ -342,7 +344,7 @@
     .hint {
       margin-top: 14px;
       font-size: 12px;
-      line-height: 1.55;
+      line-height: 1.8;
       color: var(--ink-faint);
     }
 
@@ -354,7 +356,8 @@
       margin-top: 8px;
     }
     .save-row input {
-      height: 30px;
+      height: 40px;
+      min-width: 0;
       border-radius: 8px;
       border: 1px solid var(--line);
       background: var(--surface-2);
@@ -366,7 +369,7 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      min-height: 30px;
+      min-height: 40px;
       padding: 0 4px 0 10px;
       border-radius: 8px;
       background: var(--surface-2);
@@ -379,21 +382,25 @@
       border: 0;
       background: transparent;
       color: var(--ink-soft);
-      height: 28px;
+      min-height: 40px;
+      min-width: 0;
+      overflow-wrap: anywhere;
       padding: 0;
     }
     .saved-item .del {
-      width: 26px;
-      height: 26px;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
       border: 0;
       background: transparent;
       color: var(--ink-faint);
       border-radius: 6px;
     }
-    .saved-item .del:hover { background: var(--accent-soft); color: var(--accent); }
+    @media (hover: hover) { .saved-item .del:hover { background: var(--accent-soft); color: var(--accent); } }
     .saved-item .star {
-      width: 26px;
-      height: 26px;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
       border: 0;
       background: transparent;
       color: var(--ink-faint);
@@ -401,60 +408,60 @@
       font-size: 13px;
       line-height: 1;
     }
-    .saved-item .star:hover { background: var(--accent-soft); color: var(--accent); }
+    @media (hover: hover) { .saved-item .star:hover { background: var(--accent-soft); color: var(--accent); } }
     .saved-item .star.is-on { color: var(--accent); }
     .boot-row { margin-top: 8px; }
-    .boot-row .btn { width: 100%; height: 30px; font-size: 12px; }
+    .boot-row .btn { width: 100%; min-height: 40px; padding: 8px; font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
     .boot-on { color: var(--accent); }
 
     .stage-wrap {
       min-width: 0;
       min-height: 0;
-      background: var(--bg-deep);
-      border: 1px solid rgba(196, 178, 156, 0.45);
-      border-radius: var(--radius-lg);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+      background: var(--bg);
       position: relative;
       overflow: hidden;
+      display: grid;
+      grid-template-rows: 52px minmax(0, 1fr) 48px;
+      padding: 0 28px;
     }
 
     .stage {
-      position: absolute;
-      inset: 0;
+      position: relative;
+      min-height: 0;
+      min-width: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 36px;
+      padding: 28px;
+      background: var(--bg-deep);
+      border-radius: var(--radius-md);
     }
 
     .drop {
-      width: min(520px, 86%);
-      text-align: center;
-      padding: 48px 28px;
-      border-radius: 20px;
-      border: 1px dashed #C9B59A;
-      background: rgba(250, 246, 241, 0.55);
-      backdrop-filter: blur(8px);
+      width: min(440px, 100%);
+      text-align: left;
+      padding: 32px;
+      border-radius: var(--radius-md);
+      border: 1px dashed #B6AA99;
+      background: var(--surface);
     }
     .drop-icon {
       width: 44px;
       height: 44px;
-      margin: 0 auto 16px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, #FFF8F1, #F0E2D2);
-      border: 1px solid #E2D2C0;
+      margin: 0 0 24px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-soft);
       display: grid;
       place-items: center;
       color: var(--accent);
     }
     .drop h2 {
       font-family: var(--font-display);
-      font-size: 26px;
-      font-weight: 560;
-      letter-spacing: 0.01em;
-      margin-bottom: 8px;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 12px;
     }
-    .drop p { color: var(--ink-soft); font-size: 14px; line-height: 1.6; }
+    .drop p { color: var(--ink-soft); font-size: 13px; line-height: 1.8; }
     .drop kbd {
       font-family: var(--font-ui);
       font-size: 12px;
@@ -466,14 +473,15 @@
     }
     .file-btn {
       margin-top: 18px;
-      height: 36px;
+      height: 40px;
       padding: 0 16px;
-      border-radius: 999px;
-      border: 1px solid var(--line-strong);
-      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: var(--surface);
       font-size: 13px;
     }
-    .file-btn:hover { background: #fff; }
+    @media (hover: hover) { .file-btn:hover { background: var(--accent-hover); } }
 
     canvas#preview {
       max-width: 100%;
@@ -513,51 +521,117 @@
       border-radius: 10px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 200ms var(--ease), transform 200ms var(--ease);
+      max-width: calc(100% - 32px);
+      line-height: 1.7;
       z-index: 20;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    @media (max-width: 860px) {
+    .brand-copy { display: flex; align-items: baseline; gap: 8px; }
+    .brand small { letter-spacing: 0.02em; }
+    .local-note { font-size: 12px; color: var(--ink-faint); margin-right: 16px; }
+    .local-note::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: #627B59; }
+    .btn svg { width: 15px; height: 15px; vertical-align: -2px; margin-right: 7px; }
+    .panel-heading { margin-bottom: 24px; }
+    .panel-heading h2 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+    .panel-heading p { font-size: 12px; color: var(--ink-faint); line-height: 1.8; }
+    .section-label { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+    .section-label output { font-size: 12px; font-weight: 400; color: var(--accent-hover); }
+    .save-details { margin-top: 10px; }
+    .save-details summary { cursor: pointer; min-height: 40px; padding: 10px 0; font-size: 12px; color: var(--ink-soft); }
+    .save-details summary:active:not(:focus-visible) { transform: scale(0.98); }
+    .background-label { font-size: 12px; color: var(--ink-faint); margin: 16px 0 8px; }
+    .workspace-bar, .workspace-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--ink-faint); }
+    .workspace-bar h2 { font-size: 13px; color: var(--ink-soft); font-weight: 500; }
+    .workspace-footer output { font-variant-numeric: tabular-nums; }
+    .workspace-footer kbd { font: inherit; color: var(--ink-soft); }
+    .skip-link { position: fixed; top: -80px; left: 12px; z-index: 30; padding: 12px; background: var(--surface); color: var(--accent); }
+    .skip-link:focus { top: 8px; }
+    .swatch[aria-pressed="true"]::after { content: "✓"; display: grid; place-items: center; position: absolute; inset: 50% auto auto 50%; transform: translate(-50%,-50%); width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: var(--surface); font-size: 12px; }
+    .image-background { position: relative; }
+    .image-background[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--surface); text-align: center; font-size: 12px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      button:active:not(:disabled):not(:focus-visible), .save-details summary:active:not(:focus-visible) { transform: none; }
+    }
+    @media (max-width: 1040px) {
+      .local-note { display: none; }
+      .stage-wrap { padding: 0 20px; }
+      .stage { padding: 20px; }
+      .workspace-shortcuts { display: none; }
+    }
+    @media (max-width: 760px) {
+      html, body { height: auto; min-height: 100%; }
       body { overflow: auto; }
-      .shell { grid-template-columns: 1fr; height: auto; }
-      .stage-wrap { min-height: 52vh; }
+      .topbar { padding: 12px 16px; flex-wrap: wrap; gap: 12px; }
+      .top-actions { gap: 6px; }
+      .brand small { display: none; }
+      .brand h1 { font-size: 21px; }
+      .brand .mark { width: 28px; height: 28px; }
+      .shell { display: flex; flex-direction: column; }
+      .stage-wrap { order: -1; height: clamp(350px, 58svh, 560px); min-height: 350px; padding: 0 16px; grid-template-rows: 44px minmax(0, 1fr) 40px; }
+      .stage { padding: 16px; }
+      .panel { overflow: visible; border: 0; border-top: 1px solid var(--line); padding: 24px 20px max(28px, env(safe-area-inset-bottom)); }
+      .swatches { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .swatch { max-height: 56px; aspect-ratio: auto; height: 44px; }
+      .image-backgrounds { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .drop { padding: 20px; }
+      .drop-icon { display: none; }
+      .drop h2 { font-size: 24px; }
+      .drop p { font-size: 12px; }
+      .file-btn { margin-top: 14px; }
+      .workspace-footer { font-size: 11px; }
+    }
+    @media (max-width: 480px) {
+      .topbar { gap: 10px; }
+      .top-actions { width: 100%; }
+      .top-actions .btn { padding: 0 12px; }
+      .top-actions .btn-primary { margin-left: auto; }
+      .brand-copy { align-items: baseline; }
+      .brand small { display: inline; font-size: 11px; }
+      .local-note { display: none; }
+      .swatches { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#stageWrap">跳到图片预览</a>
   <header class="topbar">
     <div class="brand">
-      <span class="mark" aria-hidden="true"></span>
-      <h1>润图</h1>
-      <small>SoftShot</small>
+      <span class="mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 15l5-5 5 5 3-3 3 3" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="8" r="1.3" fill="currentColor"/></svg></span>
+      <div class="brand-copy"><h1>润图</h1><small lang="en">SoftShot</small></div>
     </div>
     <div class="top-actions">
+      <span class="local-note">本地处理，图片不上传</span>
       <button class="btn btn-ghost" id="btnReset" disabled>换一张</button>
       <button class="btn" id="btnCopy" disabled>复制</button>
-      <button class="btn btn-primary" id="btnSave" disabled>下载 PNG</button>
+      <button class="btn btn-primary" id="btnSave" disabled><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>下载 PNG</button>
     </div>
   </header>
 
   <main class="shell">
     <aside class="panel" aria-label="美化参数">
+      <div class="panel-heading"><h2>样式与构图</h2><p>从一组搭配开始，再调成你的样子。</p></div>
       <section class="section">
-        <div class="section-label">搭配</div>
+        <div class="section-label">快捷搭配</div>
         <div class="looks" id="looks"></div>
+        <details class="save-details">
+          <summary>保存与管理搭配</summary>
         <div class="save-row">
-          <input id="lookName" maxlength="16" placeholder="给当前搭配起名" />
+          <input id="lookName" maxlength="16" aria-label="搭配名称" placeholder="给当前搭配起名" />
           <button class="btn" id="btnSaveLook" type="button">保存</button>
         </div>
         <div class="saved-list" id="savedLooks"></div>
         <div class="boot-row">
-          <button class="btn" id="btnDefault" type="button">设为开机默认</button>
+          <button class="btn" id="btnDefault" type="button">下次打开使用当前搭配</button>
         </div>
+        </details>
       </section>
 
       <section class="section">
-        <div class="section-label">背景</div>
+        <div class="section-label">背景<output id="backgroundName">暮霭</output></div>
         <div class="swatches" id="swatches"></div>
-        <div class="row"><label id="imageBackgroundsLabel">图片背景</label></div>
+        <div class="background-label" id="imageBackgroundsLabel">图片背景 · 7 款</div>
         <div class="image-backgrounds" id="imageBackgrounds" role="group" aria-labelledby="imageBackgroundsLabel"></div>
         <div class="color-row" id="solidRow" hidden>
           <input type="color" id="solidColor" value="#C17F65" aria-label="自定义纯色" />
@@ -568,22 +642,22 @@
             <label>配图</label>
             <button class="linkish" id="btnBgPick" type="button">选择图片</button>
           </div>
-          <div class="row"><label>背景模糊</label><span class="value" id="valBgBlur">0</span></div>
+          <div class="row"><label for="bgBlur">背景模糊</label><span class="value" id="valBgBlur">0</span></div>
           <input type="range" id="bgBlur" min="0" max="80" value="0" />
         </div>
       </section>
 
       <section class="section">
         <div class="section-label">构图</div>
-        <div class="row"><label>外圈 Padding</label><span class="value" id="valPadding">72</span></div>
+        <div class="row"><label for="padding">外侧留白</label><span class="value" id="valPadding">72</span></div>
         <input type="range" id="padding" min="24" max="180" value="72" />
-        <div class="row"><label>内圈 Inset</label><span class="value" id="valInset">0</span></div>
+        <div class="row"><label for="inset">内侧留白</label><span class="value" id="valInset">0</span></div>
         <input type="range" id="inset" min="0" max="120" value="0" />
-        <div class="row"><label>圆角</label><span class="value" id="valRadius">16</span></div>
+        <div class="row"><label for="radius">圆角</label><span class="value" id="valRadius">16</span></div>
         <input type="range" id="radius" min="0" max="48" value="16" />
-        <div class="row"><label>阴影</label><span class="value" id="valShadow">40</span></div>
+        <div class="row"><label for="shadow">阴影大小</label><span class="value" id="valShadow">40</span></div>
         <input type="range" id="shadow" min="0" max="80" value="40" />
-        <div class="row"><label>阴影浓度</label><span class="value" id="valOpacity">26%</span></div>
+        <div class="row"><label for="opacity">阴影浓度</label><span class="value" id="valOpacity">26%</span></div>
         <input type="range" id="opacity" min="0" max="70" value="26" />
       </section>
 
@@ -601,13 +675,14 @@
       </section>
 
       <section class="section">
-        <div class="section-label">导出</div>
+        <div class="section-label">导出倍率</div>
         <div class="pills" id="scales"></div>
-        <p class="hint">图片只在本地处理，不会上传。双击本文件即可使用。<br />Ctrl+C 复制成品，Ctrl+S 下载，Delete 换图。<br />锁比例后可拖动截图微调位置。粘贴若无效，改用拖入。</p>
+        <p class="hint">PNG 保留透明背景。图片仅在本机处理。<br />固定画布比例后，可拖动截图微调位置。</p>
       </section>
     </aside>
 
-    <section class="stage-wrap" id="stageWrap">
+    <section class="stage-wrap" id="stageWrap" aria-label="图片预览" tabindex="-1">
+      <div class="workspace-bar"><h2>预览</h2><span id="previewStatus">等待导入图片</span></div>
       <div class="stage" id="stage">
         <div class="drop" id="drop">
           <div class="drop-icon" aria-hidden="true">
@@ -617,12 +692,13 @@
               <circle cx="8.5" cy="9.2" r="1.1" fill="currentColor"/>
             </svg>
           </div>
-          <h2>把截图放进来</h2>
-          <p>拖入图片，或 <kbd>Ctrl</kbd>+<kbd>V</kbd> 粘贴<br />成品 <kbd>Ctrl</kbd>+<kbd>C</kbd> 复制 · <kbd>Ctrl</kbd>+<kbd>S</kbd> 下载</p>
-          <button class="file-btn" id="btnPick">选择文件</button>
+          <h2>给截图一个好背景</h2>
+          <p>把图片拖到这里，或按 <kbd>Ctrl / ⌘</kbd> + <kbd>V</kbd> 粘贴。调整背景、留白与光影，再导出你的作品。</p>
+          <button class="file-btn" id="btnPick">选择图片</button>
         </div>
-        <canvas id="preview"></canvas>
+        <canvas id="preview" aria-label="美化后的图片预览"></canvas>
       </div>
+      <div class="workspace-footer"><output id="exportInfo">准备好后，导出为 PNG</output><span class="workspace-shortcuts"><kbd>Ctrl / ⌘ + C</kbd> 复制 · <kbd>Ctrl / ⌘ + S</kbd> 下载</span></div>
     </section>
   </main>
 
@@ -1050,10 +1126,16 @@
 
     function previewFit() {
       syncExportButtons();
+      $("backgroundName").textContent = currentPreset().name;
+      $("previewStatus").textContent = !state.image ? "等待导入图片"
+        : $("btnSave").disabled ? "背景加载中" : "实时预览";
+      $("exportInfo").textContent = state.image
+        ? exportSize().join(" × ") + " px · PNG" : "准备好后，导出为 PNG";
       if (!state.image) return;
       const stage = $("stage");
-      const maxW = Math.max(160, stage.clientWidth - 8);
-      const maxH = Math.max(160, stage.clientHeight - 8);
+      const style = getComputedStyle(stage);
+      const maxW = Math.max(1, stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight));
+      const maxH = Math.max(1, stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom));
       const { canvasW, canvasH } = layout(state.image.naturalWidth, state.image.naturalHeight);
       const fit = Math.min(maxW / canvasW, maxH / canvasH, 1);
       const cssW = Math.max(1, Math.round(canvasW * fit));
@@ -1067,7 +1149,7 @@
       renderTo(pctx, preview.width, preview.height, state.image);
     }
 
-    function exportCanvas() {
+    function exportSize() {
       const img = state.image;
       const { canvasW, canvasH } = layout(img.naturalWidth, img.naturalHeight);
       const scale = state.scale;
@@ -1079,10 +1161,15 @@
         w = Math.round(w * s);
         h = Math.round(h * s);
       }
+      return [w, h];
+    }
+
+    function exportCanvas() {
+      const [w, h] = exportSize();
       const c = document.createElement("canvas");
       c.width = w; c.height = h;
       const ctx = c.getContext("2d");
-      renderTo(ctx, w, h, img, { transparent: currentPreset().type === "clear" });
+      renderTo(ctx, w, h, state.image, { transparent: currentPreset().type === "clear" });
       return c;
     }
 
@@ -1175,11 +1262,11 @@
       if (defaultLook) {
         const same = payloadClose(defaultLook, lookPayload());
         btn.textContent = same
-          ? "开机默认：" + (defaultLook.name || "当前搭配") + " · 再点取消"
-          : "开机默认：" + (defaultLook.name || "当前搭配") + " · 点按改用当前";
+          ? "下次使用「" + (defaultLook.name || "当前搭配") + "」· 点击取消"
+          : "改用当前搭配作为默认";
         btn.classList.add("boot-on");
       } else {
-        btn.textContent = "设为开机默认";
+        btn.textContent = "下次打开使用当前搭配";
         btn.classList.remove("boot-on");
       }
     }
@@ -1195,7 +1282,7 @@
       persist();
       syncDefaultBtn();
       renderSavedLooks();
-      toast("开机将使用「" + defaultLook.name + "」");
+      toast("下次打开将使用「" + defaultLook.name + "」");
     }
 
     function syncControls() {
@@ -1218,6 +1305,7 @@
       setPressed($("ratios"), state.ratio);
       setPressed($("scales"), String(state.scale));
       setPressed($("looks"), activeLookId);
+      $("backgroundName").textContent = currentPreset().name;
       const solidSwatch = [...$("swatches").children].find((x) => x.dataset.id === "solid");
       if (solidSwatch) solidSwatch.style.background = state.solid;
       syncBgExtra();
@@ -1257,8 +1345,8 @@
         row.className = "saved-item";
         const star = document.createElement("button");
         star.className = "star" + (defaultLook && defaultLook.source === "user" && defaultLook.name === look.name ? " is-on" : "");
-        star.title = "设为开机默认";
-        star.setAttribute("aria-label", "设为开机默认 " + look.name);
+        star.title = "下次打开使用此搭配";
+        star.setAttribute("aria-label", "设为默认搭配 " + look.name);
         star.textContent = star.classList.contains("is-on") ? "★" : "☆";
         star.addEventListener("click", () => {
           if (defaultLook && defaultLook.source === "user" && defaultLook.name === look.name) {
@@ -1266,7 +1354,7 @@
             persist();
             syncDefaultBtn();
             renderSavedLooks();
-            toast("已取消开机默认");
+            toast("已取消默认搭配");
             return;
           }
           applyLook(look, "user-" + i);
@@ -1323,6 +1411,8 @@
         button.disabled = true;
         const img = new Image();
         img.alt = "";
+        img.width = 1672;
+        img.height = 941;
         const label = document.createElement("span");
         label.textContent = p.name;
         img.onload = () => {
@@ -1386,7 +1476,7 @@
           persist();
           syncDefaultBtn();
           renderSavedLooks();
-          toast("已取消开机默认");
+          toast("已取消默认搭配");
           return;
         }
         const built = LOOKS.find((l) => l.id === activeLookId);
@@ -1424,6 +1514,7 @@
           state.scale = n;
           setPressed(scales, String(n));
           persist();
+          previewFit();
         });
         scales.appendChild(b);
       });
@@ -1492,6 +1583,7 @@
       $("btnCopy").disabled = true;
       $("btnSave").disabled = true;
       $("btnReset").disabled = true;
+      previewFit();
     });
 
     $("btnSave").addEventListener("click", () => {
@@ -1625,6 +1717,9 @@
     if (params.get("chrome") === "1") state.chrome = true;
     if (params.get("ratio") && RATIOS.some((r) => r.id === params.get("ratio"))) state.ratio = params.get("ratio");
 
+    activeLookId = LOOKS.find((look) => Object.entries(look).every(([key, value]) =>
+      key === "id" || key === "name" || state[key] === value
+    ))?.id || "";
     buildUI();
     const builtLook = LOOKS.find((l) => l.id === params.get("look"));
     if (builtLook) applyLook(builtLook, builtLook.id);
