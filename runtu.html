@@ -192,7 +192,37 @@
     }
 
     .bg-extra { margin-top: 8px; }
+    .image-backgrounds {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .image-background {
+      overflow: hidden;
+      padding: 3px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      background: var(--surface-2);
+      text-align: left;
+    }
+    .image-background img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .image-background span { display: block; padding: 5px 3px 3px; font-size: 11px; }
+    .image-background:hover { border-color: var(--accent); }
+    .image-background[aria-pressed="true"] {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent);
+      color: var(--accent);
+    }
+    .image-background:disabled { opacity: 0.5; cursor: wait; }
     .bg-extra[hidden] { display: none !important; }
+    #bgFileRow[hidden] { display: none; }
     .linkish {
       height: 28px;
       padding: 0 8px;
@@ -527,6 +557,8 @@
       <section class="section">
         <div class="section-label">背景</div>
         <div class="swatches" id="swatches"></div>
+        <div class="row"><label id="imageBackgroundsLabel">图片背景</label></div>
+        <div class="image-backgrounds" id="imageBackgrounds" role="group" aria-labelledby="imageBackgroundsLabel"></div>
         <div class="color-row" id="solidRow" hidden>
           <input type="color" id="solidColor" value="#C17F65" aria-label="自定义纯色" />
           <label for="solidColor" style="font-size:13px;color:var(--ink-soft)">自定义纯色</label>
@@ -598,6 +630,7 @@
   <input type="file" id="bgFile" accept="image/*" hidden />
   <div class="toast" id="toast" role="status"></div>
 
+  <script src="assets/backgrounds.js"></script>
   <script>
     const PRESETS = [
       { id: "haze", name: "暮霭", type: "mesh", base: "#E9D8CC",
@@ -625,7 +658,8 @@
       { id: "solid", name: "纯色", type: "solid" },
       { id: "clear", name: "透明", type: "clear" },
       { id: "photo", name: "配图", type: "photo" },
-      { id: "frost", name: "霜化", type: "frost" }
+      { id: "frost", name: "霜化", type: "frost" },
+      ...SOFTSHOT_BACKGROUNDS.map((p) => ({ ...p, type: "builtin-image" }))
     ];
     const RATIOS = [
       { id: "auto", label: "自适应" },
@@ -663,6 +697,7 @@
     let savedLooks = [];
     let activeLookId = "clean";
     let defaultLook = null;
+    const backgroundImages = new Map();
     const blurBuf = document.createElement("canvas");
 
     const $ = (id) => document.getElementById(id);
@@ -848,10 +883,11 @@
         paintCover(ctx, w, h, state.image, state.bgBlur || 40);
         ctx.fillStyle = "rgba(28, 22, 16, 0.16)";
         ctx.fillRect(0, 0, w, h);
-      } else if (preset.type === "photo") {
+      } else if (preset.type === "photo" || preset.type === "builtin-image") {
         ctx.fillStyle = "#D9CBB8";
         ctx.fillRect(0, 0, w, h);
-        if (!paintCover(ctx, w, h, state.bgImage, state.bgBlur)) {
+        const bgImage = preset.type === "photo" ? state.bgImage : backgroundImages.get(preset.id);
+        if (!paintCover(ctx, w, h, bgImage, state.bgBlur)) {
           paintMesh(ctx, w, h, PRESETS[0].base, PRESETS[0].orbs);
         } else if (state.bgBlur > 0) {
           ctx.fillStyle = "rgba(28, 22, 16, 0.10)";
@@ -871,7 +907,7 @@
         ctx.save();
         ctx.globalCompositeOperation = "soft-light";
         const pat = ctx.createPattern(noiseTile, "repeat");
-        ctx.globalAlpha = preset.type === "radial" ? 0.28 : (preset.type === "frost" || preset.type === "photo" ? 0.22 : 0.42);
+        ctx.globalAlpha = preset.type === "radial" ? 0.28 : (["frost", "photo", "builtin-image"].includes(preset.type) ? 0.22 : 0.42);
         ctx.fillStyle = pat;
         ctx.fillRect(0, 0, w, h);
         ctx.restore();
@@ -1013,6 +1049,7 @@
     }
 
     function previewFit() {
+      syncExportButtons();
       if (!state.image) return;
       const stage = $("stage");
       const maxW = Math.max(160, stage.clientWidth - 8);
@@ -1111,7 +1148,7 @@
 
     function syncBgExtra() {
       const t = currentPreset().type;
-      $("bgExtra").hidden = t !== "photo" && t !== "frost";
+      $("bgExtra").hidden = !["photo", "frost", "builtin-image"].includes(t);
       $("bgFileRow").hidden = t !== "photo";
       $("bgBlur").value = state.bgBlur;
       $("valBgBlur").textContent = state.bgBlur;
@@ -1177,6 +1214,7 @@
       $("chrome").setAttribute("aria-pressed", state.chrome ? "true" : "false");
       $("noise").setAttribute("aria-pressed", state.noise ? "true" : "false");
       setPressed($("swatches"), state.bg);
+      setPressed($("imageBackgrounds"), state.bg);
       setPressed($("ratios"), state.ratio);
       setPressed($("scales"), String(state.scale));
       setPressed($("looks"), activeLookId);
@@ -1268,9 +1306,45 @@
       previewFit();
     }
 
+    function syncExportButtons() {
+      const preset = currentPreset();
+      const ready = state.image && (preset.type !== "builtin-image" || backgroundImages.has(preset.id));
+      $("btnCopy").disabled = !ready;
+      $("btnSave").disabled = !ready;
+    }
+
+    function buildImageBackgrounds() {
+      SOFTSHOT_BACKGROUNDS.forEach((p) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "image-background";
+        button.dataset.id = p.id;
+        button.setAttribute("aria-label", p.name);
+        button.disabled = true;
+        const img = new Image();
+        img.alt = "";
+        const label = document.createElement("span");
+        label.textContent = p.name;
+        img.onload = () => {
+          backgroundImages.set(p.id, img);
+          button.disabled = false;
+          if (state.bg === p.id) previewFit();
+        };
+        img.onerror = () => {
+          label.textContent = p.name + " · 加载失败";
+          if (state.bg === p.id) toast("背景图加载失败，请选择其他背景");
+        };
+        img.src = p.src;
+        button.append(img, label);
+        button.addEventListener("click", () => chooseBg(PRESETS.find((preset) => preset.id === p.id)));
+        $("imageBackgrounds").appendChild(button);
+      });
+    }
+
     function buildUI() {
+      buildImageBackgrounds();
       const sw = $("swatches");
-      PRESETS.forEach((p) => {
+      PRESETS.filter((p) => p.type !== "builtin-image").forEach((p) => {
         const b = document.createElement("button");
         b.className = "swatch" + (p.type === "clear" ? " is-clear" : "") + (p.type === "photo" || p.type === "frost" ? " is-special" : "");
         b.dataset.id = p.id;
